@@ -26,7 +26,7 @@ case class Test(){
   @ApiImplicitParams(Array())
   def testWithGet = {
     get {
-      onComplete(Camera.takePicture(PhotoOptions("~/","example"))){
+      onComplete(Camera.takePicture(PhotoOptions("~","example"))){
         case Failure(e) => complete(s"error: ${e.getMessage} ${e.getStackTrace.toList.map(e => e.toString).mkString(" ")}")
         case _ => complete("all ok")
       }
