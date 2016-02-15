@@ -2,8 +2,11 @@ package endpoint
 
 import javax.ws.rs.Path
 
+import camera.{PhotoOptions, Camera}
 import io.swagger.annotations.{ApiImplicitParam, ApiImplicitParams, ApiOperation, Api}
 import akka.http.scaladsl.server.Directives._
+
+import scala.util.Failure
 
 /**
   * Created by Alfonso on 06/02/2016.
@@ -23,7 +26,10 @@ case class Test(){
   @ApiImplicitParams(Array())
   def testWithGet = {
     get {
-      complete("this is a test")
+      onComplete(Camera.takePicture(PhotoOptions("~/","example"))){
+        case Failure(e) => complete(s"error: ${e.getMessage} ${e.getStackTrace.toList.map(e => e.toString).mkString(" ")}")
+        case _ => complete("all ok")
+      }
     }
   }
 

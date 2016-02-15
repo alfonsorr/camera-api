@@ -23,5 +23,5 @@ object Boot extends App {
 
   val route = Test().route ~ swaggerConfig.routes
 
-  Http().bindAndHandle(route, interface = "localhost", port = 8080)
+  Http().bindAndHandle(route, interface = "0.0.0.0", port = 9090)
 }
