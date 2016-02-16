@@ -4,6 +4,7 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
+import scala.io.Source
 
 
 sealed trait PhotoFormat {
@@ -31,20 +32,13 @@ object Camera extends LazyLogging{
   val raspistillPath = "/opt/vc/bin/raspistill"
 
 
-  def takePicture(photoOptions: PhotoOptions): Future[String] = {
+  def takePicture(photoOptions: PhotoOptions): Future[Array[Byte]] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     Future {
-      println("taking a picture")
-      logger.info("taking a picture")
       val str = photoOptions()
-      println(s"options: $str")
       Runtime.getRuntime.exec(s"$raspistillPath $str")
-      println("going to wait")
-      logger.info("going to wait")
       Thread.sleep(photoOptions.timeout.toMillis)
-      println("woke up")
-      logger.info("woke up")
-      str
+      Source.fromFile(photoOptions.filePath).map(_.toByte).toArray
     }
   }
 }
@@ -80,9 +74,10 @@ case class AdvanceOptions(verticalFlip: Boolean = false, horizontalFlip: Boolean
 
 case class PhotoOptions(path: String, name: String, format: PhotoFormat = JPG, width: Int = 1024, height: Int = 728, quality: Int = 100, timeout: Duration = Duration(5, "sec"), advanceOptions: Option[AdvanceOptions] = None) extends TaggedOptions {
   def apply(): String = {
-    val fullName = s"$path/$name.${format()}"
-    val values = List(Some(width), Some(height), Some(quality), Some(fullName), Some(format()), Some(timeout.toMillis))
+    val values = List(Some(width), Some(height), Some(quality), Some(filePath), Some(format()), Some(timeout.toMillis))
     val tags = List("w", "h", "q", "o", "e", "t")
     stringOfTags(values, tags)
   }
+
+  val filePath = s"$path/$name.${format()}"
 }
