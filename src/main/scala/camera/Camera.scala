@@ -1,5 +1,7 @@
 package camera
 
+import java.nio.file.{Paths, Files}
+
 import com.typesafe.scalalogging.slf4j.LazyLogging
 
 import scala.concurrent.Future
@@ -38,7 +40,7 @@ object Camera extends LazyLogging{
       val str = photoOptions()
       Runtime.getRuntime.exec(s"$raspistillPath $str")
       Thread.sleep(photoOptions.timeout.toMillis)
-      Source.fromFile(photoOptions.filePath).map(_.toByte).toArray
+      Files.readAllBytes(Paths.get(photoOptions.filePath))
     }
   }
 }
