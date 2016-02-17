@@ -6,7 +6,6 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
-import scala.io.Source
 
 
 sealed trait PhotoFormat {
@@ -39,7 +38,7 @@ object Camera extends LazyLogging{
     Future {
       val str = photoOptions()
       Runtime.getRuntime.exec(s"$raspistillPath $str")
-      Thread.sleep(photoOptions.timeout.toMillis)
+      Thread.sleep(photoOptions.timeout.toMillis+100)
       Files.readAllBytes(Paths.get(photoOptions.filePath))
     }
   }
@@ -74,10 +73,10 @@ case class AdvanceOptions(verticalFlip: Boolean = false, horizontalFlip: Boolean
   }
 }
 
-case class PhotoOptions(path: String, name: String, format: PhotoFormat = JPG, width: Int = 1024, height: Int = 728, quality: Int = 100, timeout: Duration = Duration(5, "sec"), advanceOptions: Option[AdvanceOptions] = None) extends TaggedOptions {
+case class PhotoOptions(path: String, name: String, format: PhotoFormat = JPG, width: Int = 1024, height: Int = 728, quality: Int = 100, timeout: Duration = Duration(0, "sec"), advanceOptions: Option[AdvanceOptions] = None, noPreview: Boolean = true) extends TaggedOptions {
   def apply(): String = {
-    val values = List(Some(width), Some(height), Some(quality), Some(filePath), Some(format()), Some(timeout.toMillis))
-    val tags = List("w", "h", "q", "o", "e", "t")
+    val values = List(Some(width), Some(height), Some(quality), Some(filePath), Some(format()), Some(timeout.toMillis), Some(noPreview))
+    val tags = List("w", "h", "q", "o", "e", "t", "n")
     stringOfTags(values, tags)
   }
 
