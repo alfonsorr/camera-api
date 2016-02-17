@@ -1,8 +1,10 @@
 package camera
 
 import java.nio.file.{Paths, Files}
+import java.time.temporal.TemporalUnit
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import utils.Configuration
 
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
@@ -28,9 +30,10 @@ object BMP extends PhotoFormat {
   def apply(): String = "bmp"
 }
 
-object Camera extends LazyLogging{
+object Camera extends LazyLogging with Configuration{
 
   val raspistillPath = "/opt/vc/bin/raspistill"
+  val timeout = config.getDuration("timeout").toMillis
 
 
   def takePicture(photoOptions: PhotoOptions): Future[Array[Byte]] = {
@@ -38,7 +41,7 @@ object Camera extends LazyLogging{
     Future {
       val str = photoOptions()
       Runtime.getRuntime.exec(s"$raspistillPath $str")
-      Thread.sleep(photoOptions.timeout.toMillis+100)
+      Thread.sleep(photoOptions.timeout.toMillis+timeout)
       Files.readAllBytes(Paths.get(photoOptions.filePath))
     }
   }
