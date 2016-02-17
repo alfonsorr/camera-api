@@ -73,7 +73,7 @@ case class AdvanceOptions(verticalFlip: Boolean = false, horizontalFlip: Boolean
   }
 }
 
-case class PhotoOptions(path: String, name: String, format: PhotoFormat = JPG, width: Int = 1024, height: Int = 728, quality: Int = 100, timeout: Duration = Duration(0, "sec"), advanceOptions: Option[AdvanceOptions] = None, noPreview: Boolean = true) extends TaggedOptions {
+case class PhotoOptions(path: String, name: String, format: PhotoFormat = JPG, width: Int = 1024, height: Int = 728, quality: Int = 100, timeout: Duration = Duration(100, "ms"), advanceOptions: Option[AdvanceOptions] = None, noPreview: Boolean = true) extends TaggedOptions {
   def apply(): String = {
     val values = List(Some(width), Some(height), Some(quality), Some(filePath), Some(format()), Some(timeout.toMillis), Some(noPreview))
     val tags = List("w", "h", "q", "o", "e", "t", "n")
