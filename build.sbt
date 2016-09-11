@@ -1,22 +1,27 @@
-name := "akkaHttp"
+name := "camera_node"
 
 version := "1.0"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
+
+sbtVersion := "0.13.12"
+
+mainClass in assembly := Some("Boot")
 
 libraryDependencies ++= {
-  val akkaV = "2.4.1"
-  val akkaStreamV = "2.0.3"
-  val scalaTestV = "2.2.5"
+  val akkaV = "2.4.10"
+  val scalaTestV = "3.0.0"
+  val swaggerV = "0.7.2"
+  val loggingV = "3.4.0"
   Seq(
     "com.typesafe.akka" %% "akka-actor" % akkaV,
-    "com.typesafe.akka" %% "akka-stream-experimental" % akkaStreamV,
-    "com.typesafe.akka" %% "akka-http-core-experimental" % akkaStreamV,
-    "com.typesafe.akka" %% "akka-http-experimental" % akkaStreamV,
-    "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaStreamV,
-    "com.typesafe.akka" %% "akka-http-testkit-experimental" % akkaStreamV,
+    "com.typesafe.akka" %% "akka-stream" % akkaV,
+    "com.typesafe.akka" %% "akka-http-core" % akkaV,
+    "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaV,
+    "com.typesafe.akka" %% "akka-http-testkit" % akkaV,
     "org.scalatest" %% "scalatest" % scalaTestV % "test",
-    "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.6.2",
-    "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
+    "com.github.swagger-akka-http" %% "swagger-akka-http" % swaggerV,
+    "com.typesafe.scala-logging" %% "scala-logging" % loggingV,
+    "org.slf4j" % "slf4j-simple" % "1.7.21"
   )
 }
