@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.github.swagger.akka.{HasActorSystem, SwaggerHttpService}
 import scala.reflect.runtime.universe._
-import endpoint.Test
+import endpoint.PhotoEndpoint
 
 
 /**
@@ -13,6 +13,6 @@ import endpoint.Test
 class SwaggerConfig(system: ActorSystem) extends SwaggerHttpService with HasActorSystem {
   implicit val actorSystem: ActorSystem = system
   implicit val materializer: ActorMaterializer = ActorMaterializer()
-  override val apiTypes: Seq[scala.reflect.runtime.universe.Type] = Seq(typeOf[Test])
+  override val apiTypes: Seq[scala.reflect.runtime.universe.Type] = Seq(typeOf[PhotoEndpoint])
   //override here to change the SwaggerHttpService methods config
 }
