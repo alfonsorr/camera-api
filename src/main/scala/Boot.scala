@@ -1,5 +1,5 @@
-import actor.paparazzi.Paparazzi
-import actor.photoGetter.PhotoCache
+import actors.paparazzi.Paparazzi
+import actors.photoGetter.PhotoCache
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http

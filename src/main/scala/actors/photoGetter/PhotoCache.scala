@@ -1,4 +1,4 @@
-package actor.photoGetter
+package actors.photoGetter
 
 import akka.actor.{Actor, ActorLogging, Props}
 import messages.{GetLastPhoto, GetPhoto, Photo}

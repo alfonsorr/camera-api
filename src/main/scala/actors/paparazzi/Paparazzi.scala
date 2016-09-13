@@ -1,4 +1,4 @@
-package actor.paparazzi
+package actors.paparazzi
 
 import java.util.{Calendar, Date}
 import java.util.concurrent.TimeUnit
