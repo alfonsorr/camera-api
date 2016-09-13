@@ -41,10 +41,10 @@ object Camera extends LazyLogging with Configuration {
       import scala.sys.process._
       val str = photoOptions(name)
       val command = s"$raspistillPath $str"
-      logger.info(s"Executing: $command")
+      logger.debug(s"Executing: $command")
       val os = new ByteArrayOutputStream()
-      val result = command #> os
-      result.!
+      val process = command #> os
+      process.!
       os.toByteArray
     }
   }
