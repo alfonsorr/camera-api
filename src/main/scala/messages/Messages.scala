@@ -2,7 +2,9 @@ package messages
 
 import java.util.Calendar
 
-case class Photo(date:Calendar, data:Array[Byte])
+import camera.PhotoFormat
+
+case class Photo(date:Calendar, data:Array[Byte], format:PhotoFormat)
 
 object GetLastPhoto
 

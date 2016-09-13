@@ -1,9 +1,10 @@
 package camera
 
-import java.io.{ByteArrayOutputStream, InputStream}
-import java.nio.file.{Files, Paths}
+import java.io.ByteArrayOutputStream
+import java.util.Calendar
 
 import com.typesafe.scalalogging.LazyLogging
+import messages.Photo
 import utils.Configuration
 
 import scala.concurrent.duration.Duration
@@ -49,8 +50,8 @@ object Camera extends LazyLogging with Configuration {
   }
 
   def takePicture(photoOptions: PhotoOptions)(
-      implicit executor: ExecutionContext): Future[Array[Byte]] = {
-    snap(photoOptions, "-")
+      implicit executor: ExecutionContext): Future[Photo] = {
+    snap(photoOptions, "-").map(data => Photo(Calendar.getInstance,data, photoOptions.format))
   }
 }
 

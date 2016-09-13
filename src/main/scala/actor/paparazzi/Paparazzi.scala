@@ -8,20 +8,19 @@ import camera.{Camera, PhotoOptions}
 
 import scala.concurrent.duration.Duration
 import akka.pattern.pipe
-import messages.Photo
 
 private case class SnapPhoto()
 
 object Paparazzi {
-  def props(photoOptions: PhotoOptions, sendTo:ActorRef) = Props(new Paparazzi(photoOptions, sendTo))
+  def props(photoOptions: PhotoOptions, photoDestinyActor:ActorRef) = Props(new Paparazzi(photoOptions, photoDestinyActor))
 }
 
-class Paparazzi(photoOptions: PhotoOptions, sendTo:ActorRef) extends Actor with ActorLogging{
+class Paparazzi(photoOptions: PhotoOptions, photoDestinyActor:ActorRef) extends Actor with ActorLogging{
 
   import context.dispatcher
 
   context.system.scheduler.schedule(Duration(5, TimeUnit.SECONDS),Duration(10, TimeUnit.SECONDS), self,SnapPhoto())
   override def receive: Receive = {
-    case _:SnapPhoto => Camera.takePicture(photoOptions) map (data => Photo(Calendar.getInstance(), data)) pipeTo sendTo
+    case _:SnapPhoto => Camera.takePicture(photoOptions) pipeTo photoDestinyActor
   }
 }
