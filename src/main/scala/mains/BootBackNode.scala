@@ -1,10 +1,13 @@
+package mains
+
+import actors.CamerasReception
 import actors.paparazzi.Paparazzi
 import actors.photoGetter.PhotoCache
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
-import akka.stream.ActorMaterializer
 import akka.http.scaladsl.server.Directives._
+import akka.stream.ActorMaterializer
 import camera.PhotoOptions
 import com.typesafe.config.ConfigFactory
 import endpoint.PhotoEndpoint
@@ -14,26 +17,23 @@ import utils.SwaggerConfig
 /**
   * Created by Alfonso on 01/02/2016.
   */
-object Boot extends App {
+object BootBackNode extends App {
 
-  implicit val system = ActorSystem()
+  val config = ConfigFactory.parseResources("back.conf").withFallback(ConfigFactory.load())
+  implicit val system = ActorSystem("default",config)
   implicit val executor = system.dispatcher
   implicit val materializer = ActorMaterializer()
 
-  val config = ConfigFactory.load()
   val swaggerConfig = new SwaggerConfig(system)
   val logger = Logging(system, getClass)
 
-  val cache = startActorsAndReturnCache(system)
+  val cache = startActors(system)
 
-  val route = PhotoEndpoint(cache).route ~ swaggerConfig.routes
+  val route = swaggerConfig.routes
 
   Http().bindAndHandle(route, interface = "0.0.0.0", port = 9090)
 
-  def startActorsAndReturnCache(system: ActorSystem) = {
-    val nPhotos = 10
-    val cache = system.actorOf(PhotoCache.props(nPhotos),"photoCache")
-    system.actorOf(Paparazzi.props(PhotoOptions(""), cache),"paparazzi")
-    cache
+  def startActors(system: ActorSystem) = {
+    system.actorOf(CamerasReception.props(), "creception")
   }
 }

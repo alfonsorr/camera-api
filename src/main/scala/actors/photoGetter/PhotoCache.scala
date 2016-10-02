@@ -10,6 +10,7 @@ object PhotoCache {
 class PhotoCache(nPhotos:Int) extends Actor with ActorLogging{
   override def receive: Receive = {
     case photo:Photo => context.become(receiveWithCache(List(photo)))
+    case _ => log.warning("not yet sended the first photo")
   }
 
   def receiveWithCache(photoList:List[Photo]): Receive = {
