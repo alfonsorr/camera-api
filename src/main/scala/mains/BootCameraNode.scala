@@ -16,13 +16,17 @@ import endpoint.PhotoEndpoint
 import utils.SwaggerConfig
 
 import scala.concurrent.duration.Duration
+import scala.util.Try
 
 /**
   * Created by Alfonso on 01/02/2016.
   */
 object BootCameraNode extends App {
 
-  val config = ConfigFactory.parseResources("camera1.conf").withFallback(ConfigFactory.load())
+  val confFile = args.map(_+".conf").headOption.getOrElse("camera1.conf")
+  val config = ConfigFactory.parseResources(confFile).withFallback(ConfigFactory.load())
+  val cameraConfig = config.getConfig("camera")
+  val port = cameraConfig.getInt("port")
   implicit val system = ActorSystem("default", config)
   implicit val executor = system.dispatcher
   implicit val materializer = ActorMaterializer()
@@ -30,26 +34,30 @@ object BootCameraNode extends App {
   val swaggerConfig = new SwaggerConfig(system)
   val logger = Logging(system, getClass)
 
-  val takePeriodicPhotos = args.headOption.forall(_.toBoolean)
-
-  val cache = startActorsAndReturnCache(system,takePeriodicPhotos)
+  val cache = startActorsAndReturnCache(system,cameraConfig)
 
   val route = PhotoEndpoint(cache).route ~ swaggerConfig.routes
 
-  Http().bindAndHandle(route, interface = "0.0.0.0", port = 9091)
+  Http().bindAndHandle(route, interface = "0.0.0.0", port)
 
-  def startActorsAndReturnCache(system: ActorSystem, takePeriodicPhotos:Boolean = true) = {
+  def startActorsAndReturnCache(system: ActorSystem, cameraConfig:Config) = {
+    val periodicCameraConfig = cameraConfig.getConfig("periodicPhotos")
+    val nodeName = cameraConfig.getString("name")
+    val period = Try{periodicCameraConfig.getDuration("period")}
+      .map(d => Duration(d.toNanos, TimeUnit.NANOSECONDS))
+      .getOrElse(Duration(5, TimeUnit.SECONDS))
+    val takePeriodicPhotos = Try{periodicCameraConfig.getBoolean("active")}.getOrElse(true)
     val nPhotos = 10
     val cache = system.actorOf(PhotoCache.props(nPhotos), "photoCache")
     val paparazzi =
       system.actorOf(Paparazzi.props(PhotoOptions(""), cache), "paparazzi")
     if (takePeriodicPhotos) {
-      system.scheduler.schedule(Duration(5, TimeUnit.SECONDS),
-        Duration(10, TimeUnit.SECONDS),
+      system.scheduler.schedule(period,
+        period,
         paparazzi,
         SnapPhoto)
     }
-    system.actorOf(CameraClusterAware.props(cache))
+    system.actorOf(CameraClusterAware.props(cache, nodeName))
     cache
   }
 }

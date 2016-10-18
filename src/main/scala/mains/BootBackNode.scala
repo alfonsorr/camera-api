@@ -11,7 +11,7 @@ import akka.stream.ActorMaterializer
 import camera.PhotoOptions
 import com.typesafe.config.ConfigFactory
 import endpoint.PhotoEndpoint
-import utils.SwaggerConfig
+import utils.{Statics, SwaggerConfig}
 
 
 /**
@@ -34,6 +34,6 @@ object BootBackNode extends App {
   Http().bindAndHandle(route, interface = "0.0.0.0", port = 9090)
 
   def startActors(system: ActorSystem) = {
-    system.actorOf(CamerasReception.props(), "creception")
+    system.actorOf(CamerasReception.props(), Statics.CAMERA_RECEPTION_NAME)
   }
 }
