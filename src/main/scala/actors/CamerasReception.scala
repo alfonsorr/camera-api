@@ -12,10 +12,10 @@ case class CameraDown(pathOfCamera: String) extends CameraState
 case class CameraManager(idCamera: String, ref:ActorRef)
 
 object CamerasReception {
-  def props() = Props(new CamerasReception())
+  def props(camerasList:ActorRef) = Props(new CamerasReception(camerasList))
 }
 
-class CamerasReception extends Actor with ActorLogging{
+class CamerasReception(camerasList:ActorRef) extends Actor with ActorLogging{
 
   val cluster = Cluster(context.system)
 
@@ -27,15 +27,9 @@ class CamerasReception extends Actor with ActorLogging{
   override def receive: Receive =
     receiveCamera(Map.empty,Map.empty)
   def receiveCamera(cameras: Map[String, ActorRef], senders: Map[ActorRef, String]): Receive = {
-    case CameraUp(id,ref) =>
-      val actualCameras = cameras + (id -> ref)
-      val refs = senders + (sender() -> id)
-      context.become(receiveCamera(actualCameras, refs), discardOld = true)
-      ref ! GetLastPhoto
-      log.info(s"""new camera "$id" added :D ${ref.path}""")
-    case CameraDown(path) =>
-      //context.become(receiveCamera(cameras - id))
-      log.info("we lost a camera!!!!!!")
+    case a:CameraState =>
+      log.info("message from camera")
+      camerasList ! a
     case MemberUp(member) =>
       log.info("Member is Up: {}", member.address)
       if (member.roles.contains("camera")) {

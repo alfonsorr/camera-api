@@ -1,5 +1,6 @@
 package mains
 
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 import actors.CameraClusterAware
@@ -10,9 +11,11 @@ import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
-import camera.PhotoOptions
+import camera.{JPG, PhotoOptions}
+import com.google.common.io.ByteStreams
 import com.typesafe.config.{Config, ConfigFactory}
 import endpoint.PhotoEndpoint
+import messages.Photo
 import utils.SwaggerConfig
 
 import scala.concurrent.duration.Duration
@@ -56,6 +59,9 @@ object BootCameraNode extends App {
         period,
         paparazzi,
         SnapPhoto)
+    } else {
+      val photo = ByteStreams.toByteArray(this.getClass.getClassLoader.getResourceAsStream("testphoto.jpg"))
+      cache ! Photo(Calendar.getInstance(), photo, JPG)
     }
     system.actorOf(CameraClusterAware.props(cache, nodeName))
     cache

@@ -14,19 +14,19 @@ sealed trait PhotoFormat {
   def apply(): String
 }
 
-object JPG extends PhotoFormat {
+case object JPG extends PhotoFormat {
   def apply(): String = "jpg"
 }
 
-object GIF extends PhotoFormat {
+case object GIF extends PhotoFormat {
   def apply(): String = "gif"
 }
 
-object PNG extends PhotoFormat {
+case object PNG extends PhotoFormat {
   def apply(): String = "png"
 }
 
-object BMP extends PhotoFormat {
+case object BMP extends PhotoFormat {
   def apply(): String = "bmp"
 }
 

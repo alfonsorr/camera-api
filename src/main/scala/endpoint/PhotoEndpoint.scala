@@ -7,7 +7,7 @@ import akka.actor.ActorRef
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, MediaTypes}
 import io.swagger.annotations.{Api, ApiImplicitParams, ApiOperation}
 import akka.http.scaladsl.server.Directives._
-import messages.{GetLastPhoto, GetPhoto, Photo}
+import messages.{GetLastPhoto, GetNthPhoto, Photo}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.scalalogging.LazyLogging
@@ -36,7 +36,7 @@ case class PhotoEndpoint(photoCache:ActorRef) extends LazyLogging{
     get {
       parameters("n".as[Int].?) {
         n =>
-        onComplete((photoCache ? GetPhoto(n.getOrElse(0))).mapTo[Photo]) {
+        onComplete((photoCache ? GetNthPhoto(n.getOrElse(0))).mapTo[Photo]) {
           case Failure(e) =>
             logger.info("could't retreive the last photo")
             complete(s"error: ${e.getMessage} ${e.getStackTrace.toList.map(e => e.toString).mkString(" ")}")

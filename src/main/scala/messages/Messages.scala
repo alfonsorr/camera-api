@@ -6,6 +6,8 @@ import camera.PhotoFormat
 
 case class Photo(date:Calendar, data:Array[Byte], format:PhotoFormat)
 
-case object GetLastPhoto
+trait GetPhoto
 
-case class GetPhoto(pos:Int)
+case object GetLastPhoto extends GetPhoto
+
+case class GetNthPhoto(pos:Int) extends GetPhoto

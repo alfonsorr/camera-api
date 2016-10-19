@@ -1,7 +1,7 @@
 package actors.photoGetter
 
 import akka.actor.{Actor, ActorLogging, Props}
-import messages.{GetLastPhoto, GetPhoto, Photo}
+import messages.{GetLastPhoto, GetNthPhoto, Photo}
 
 object PhotoCache {
   def props(nPhotos:Int):Props = Props(new PhotoCache(nPhotos))
@@ -9,7 +9,7 @@ object PhotoCache {
 
 class PhotoCache(nPhotos:Int) extends Actor with ActorLogging{
   override def receive: Receive = {
-    case photo:Photo => context.become(receiveWithCache(List(photo)))
+    case photo:Photo => context.become(receiveWithCache(List(photo)),discardOld = true)
     case _ => log.warning("not yet sended the first photo")
   }
 
@@ -18,7 +18,7 @@ class PhotoCache(nPhotos:Int) extends Actor with ActorLogging{
       context.become(receiveWithCache(photo :: photoList),discardOld = true)
     case GetLastPhoto => log.info("sending the last photo")
       sender() ! photoList.head
-    case GetPhoto(n) => log.info("sending the last photo")
+    case GetNthPhoto(n) => log.info("sending the last photo")
       sender() ! photoList.lift(n).getOrElse(photoList.last)
   }
 
