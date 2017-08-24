@@ -17,11 +17,11 @@ import akka.http.scaladsl.server.Directives._
 object BootBackNode extends App {
 
   val config = ConfigFactory.parseResources("back.conf").withFallback(ConfigFactory.load())
-  implicit val system = ActorSystem("default",config)
-  implicit val executor = system.dispatcher
-  implicit val materializer = ActorMaterializer()
+  private implicit val system = ActorSystem("default",config)
+  private implicit val executor = system.dispatcher
+  private implicit val materializer = ActorMaterializer()
 
-  val swaggerConfig = new SwaggerConfig(system)
+  val swaggerConfig = new SwaggerConfig()
   val logger = Logging(system, getClass)
 
   val camerasList = startActors(system)

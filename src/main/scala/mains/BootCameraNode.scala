@@ -11,7 +11,7 @@ import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
-import camera.{JPG, PhotoOptions}
+import camera.{PhotoFormats, PhotoOptions}
 import com.google.common.io.ByteStreams
 import com.typesafe.config.{Config, ConfigFactory}
 import endpoint.PhotoEndpoint
@@ -30,11 +30,11 @@ object BootCameraNode extends App {
   val config = ConfigFactory.parseResources(confFile).withFallback(ConfigFactory.load())
   val cameraConfig = config.getConfig("camera")
   val port = cameraConfig.getInt("port")
-  implicit val system = ActorSystem("default", config)
-  implicit val executor = system.dispatcher
-  implicit val materializer = ActorMaterializer()
+  private implicit val system = ActorSystem("default", config)
+  private implicit val executor = system.dispatcher
+  private  implicit val materializer = ActorMaterializer()
 
-  val swaggerConfig = new SwaggerConfig(system)
+  val swaggerConfig = new SwaggerConfig()
   val logger = Logging(system, getClass)
 
   val cache = startActorsAndReturnCache(system,cameraConfig)
@@ -60,8 +60,8 @@ object BootCameraNode extends App {
         paparazzi,
         SnapPhoto)
     } else {
-      val photo = ByteStreams.toByteArray(this.getClass.getClassLoader.getResourceAsStream("testphoto.jpg"))
-      cache ! Photo(Calendar.getInstance(), photo, JPG)
+      val photo = ByteStreams.toByteArray(this.getClass.getClassLoader.getResourceAsStream(s"$nodeName.jpg"))
+      cache ! Photo(Calendar.getInstance(), photo, PhotoFormats.JPG)
     }
     system.actorOf(CameraClusterAware.props(cache, nodeName))
     cache

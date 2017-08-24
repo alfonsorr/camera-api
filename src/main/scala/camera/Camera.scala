@@ -10,30 +10,14 @@ import utils.Configuration
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
 
-sealed trait PhotoFormat {
-  def apply(): String
-}
 
-case object JPG extends PhotoFormat {
-  def apply(): String = "jpg"
-}
 
-case object GIF extends PhotoFormat {
-  def apply(): String = "gif"
-}
 
-case object PNG extends PhotoFormat {
-  def apply(): String = "png"
-}
-
-case object BMP extends PhotoFormat {
-  def apply(): String = "bmp"
-}
 
 object Camera extends LazyLogging with Configuration {
 
   val raspistillPath = "/opt/vc/bin/raspistill"
-  val timeout = config.getDuration("timeout").toMillis
+  private val timeout = config.getDuration("timeout").toMillis
 
   private def snap(photoOptions: PhotoOptions, name: String)(
       implicit executor: ExecutionContext): Future[Array[Byte]] = {
@@ -90,7 +74,7 @@ case class AdvanceOptions(verticalFlip: Boolean = false,
 }
 
 case class PhotoOptions(path: String,
-                        format: PhotoFormat = JPG,
+                        format: PhotoFormat = PhotoFormats.JPG,
                         width: Int = 1900,
                         height: Int = 1080,
                         quality: Int = 100,
