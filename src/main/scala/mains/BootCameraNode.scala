@@ -7,6 +7,7 @@ import actors.CameraClusterAware
 import actors.paparazzi.{Paparazzi, SnapPhoto}
 import actors.photoGetter.PhotoCache
 import akka.actor.ActorSystem
+import akka.dispatch.Dispatcher
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
@@ -18,6 +19,7 @@ import endpoint.PhotoEndpoint
 import messages.Photo
 import utils.SwaggerConfig
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.Duration
 import scala.util.Try
 
@@ -30,9 +32,9 @@ object BootCameraNode extends App {
   val config = ConfigFactory.parseResources(confFile).withFallback(ConfigFactory.load())
   val cameraConfig = config.getConfig("camera")
   val port = cameraConfig.getInt("port")
-  private implicit val system = ActorSystem("default", config)
-  private implicit val executor = system.dispatcher
-  private  implicit val materializer = ActorMaterializer()
+  private implicit val system:ActorSystem = ActorSystem("default", config)
+  private implicit val executor:ExecutionContext = system.dispatcher
+  private implicit val materializer:ActorMaterializer = ActorMaterializer()
 
   val swaggerConfig = new SwaggerConfig()
   val logger = Logging(system, getClass)
