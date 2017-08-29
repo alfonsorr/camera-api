@@ -3,7 +3,7 @@ package camera
 import org.scalatest.{FlatSpec, Matchers}
 import scala.concurrent.duration._
 
-class Camera extends FlatSpec with Matchers{
+class CameraTest extends FlatSpec with Matchers{
 
   "Camera options" should "be created with the default options" in {
     PhotoOptions().optionString should be("-w 1900 -h 1080 -q 100 -o - -e jpg -t 100 -n ")
