@@ -3,7 +3,7 @@ package camera
 import org.scalatest.{FlatSpec, Matchers}
 import scala.concurrent.duration._
 
-class CameraTest extends FlatSpec with Matchers{
+class PhotoOptionsTest extends FlatSpec with Matchers{
 
   "Camera options" should "be created with the default options" in {
     PhotoOptions().optionString should be("-w 1900 -h 1080 -q 100 -o - -e jpg -t 100 -n ")
@@ -19,5 +19,14 @@ class CameraTest extends FlatSpec with Matchers{
   }
   it should "prevent from wrong widths" in {
     an[AssertionError] should be thrownBy PhotoOptions(width = -50).optionString
+  }
+  it should "prevent from wrong height" in {
+    an[AssertionError] should be thrownBy PhotoOptions(height = -50).optionString
+  }
+  it should "prevent from small timeout" in {
+    an[AssertionError] should be thrownBy PhotoOptions(timeout = 50.millis).optionString
+  }
+  it should "prevent from wrong quality" in {
+    an[AssertionError] should be thrownBy PhotoOptions(quality = -50).optionString
   }
 }
