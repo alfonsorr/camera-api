@@ -2,22 +2,22 @@ package camera
 
 object PhotoFormats {
   case object JPG extends PhotoFormat {
-    def apply(): String = "jpg"
+    val stringValue: String = "jpg"
   }
 
   case object GIF extends PhotoFormat {
-    def apply(): String = "gif"
+    val stringValue: String = "gif"
   }
 
   case object PNG extends PhotoFormat {
-    def apply(): String = "png"
+    val stringValue: String = "png"
   }
 
   case object BMP extends PhotoFormat {
-    def apply(): String = "bmp"
+    val stringValue: String = "bmp"
   }
 }
 
 sealed trait PhotoFormat {
-  def apply(): String
+  val stringValue: String
 }

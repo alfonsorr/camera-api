@@ -5,26 +5,24 @@ import javax.ws.rs.Path
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, MediaTypes}
-import io.swagger.annotations.{Api, ApiImplicitParams, ApiOperation}
 import akka.http.scaladsl.server.Directives._
-import messages.{GetLastPhoto, GetNthPhoto, Photo}
+import akka.http.scaladsl.server.Route
 import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.scalalogging.LazyLogging
+import io.swagger.annotations.{Api, ApiImplicitParams, ApiOperation}
+import messages.{GetNthPhoto, Photo}
 
 import scala.concurrent.duration.Duration
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Success}
 
-/**
-  * Created by Alfonso on 06/02/2016.
-  */
 @Api(tags = Array("get"))
 @Path("/get")
 case class PhotoEndpoint(photoCache:ActorRef) extends LazyLogging{
 
-  implicit val timeout = Timeout(Duration(2,TimeUnit.SECONDS))
+  implicit val timeout:Timeout = Timeout(Duration(2,TimeUnit.SECONDS))
 
-  val route = {
+  val route:Route = {
     path("get"){
       getPhoto
     }
@@ -32,7 +30,7 @@ case class PhotoEndpoint(photoCache:ActorRef) extends LazyLogging{
 
   @ApiOperation(httpMethod = "GET", value = "Returns the last taked photo", response = classOf[String])
   @ApiImplicitParams(Array())
-  def getPhoto = {
+  def getPhoto:Route = {
     get {
       parameters("n".as[Int].?) {
         n =>

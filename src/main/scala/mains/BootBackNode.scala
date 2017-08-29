@@ -4,22 +4,20 @@ import actors.{CamerasReception, NexusCamerasList}
 import akka.actor.{ActorRef, ActorSystem}
 import akka.event.Logging
 import akka.http.scaladsl.Http
-import akka.stream.ActorMaterializer
+import akka.stream.{ActorMaterializer, Materializer}
 import com.typesafe.config.ConfigFactory
 import endpoint.NexusEndpoint
 import utils.{Statics, SwaggerConfig}
 import akka.http.scaladsl.server.Directives._
 
+import scala.concurrent.ExecutionContext
 
-/**
-  * Created by Alfonso on 01/02/2016.
-  */
 object BootBackNode extends App {
 
   val config = ConfigFactory.parseResources("back.conf").withFallback(ConfigFactory.load())
-  private implicit val system = ActorSystem("default",config)
-  private implicit val executor = system.dispatcher
-  private implicit val materializer = ActorMaterializer()
+  private implicit val system:ActorSystem = ActorSystem("default",config)
+  private implicit val executor:ExecutionContext = system.dispatcher
+  private implicit val materializer:Materializer = ActorMaterializer()
 
   val swaggerConfig = new SwaggerConfig()
   val logger = Logging(system, getClass)

@@ -1,8 +1,5 @@
 package mains
 
-/**
-  * Created by alf on 14/09/16.
-  */
 object Boot extends App{
 
  args.headOption.foreach{

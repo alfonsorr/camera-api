@@ -3,14 +3,11 @@ package endpoint
 import java.util.concurrent.TimeUnit
 import javax.ws.rs.Path
 
-import actors.NexusCamerasList.{
-  CameraNotFound,
-  GetListOfCameras,
-  GetPhotoFromList
-}
+import actors.NexusCamerasList.{CameraNotFound, GetListOfCameras, GetPhotoFromList}
 import akka.actor.ActorRef
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, MediaTypes}
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.Route
 import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.scalalogging.LazyLogging
@@ -20,16 +17,13 @@ import messages.{GetNthPhoto, Photo}
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 
-/**
-  * Created by Alfonso on 06/02/2016.
-  */
 @Api(tags = Array("get"))
 @Path("/camera")
 case class NexusEndpoint(camerasHandler: ActorRef) extends LazyLogging {
 
-  implicit val timeout = Timeout(Duration(2, TimeUnit.SECONDS))
+  implicit val timeout:Timeout = Timeout(Duration(2, TimeUnit.SECONDS))
 
-  val route = {
+  val route:Route = {
     pathPrefix("camera") {
       cameraPhoto ~ cameraList
     }
@@ -39,7 +33,7 @@ case class NexusEndpoint(camerasHandler: ActorRef) extends LazyLogging {
                 value = "Returns a list of active cameras",
                 response = classOf[String])
   @ApiImplicitParams(Array())
-  def cameraPhoto = {
+  def cameraPhoto:Route = {
     pathPrefix(Segment) { cameraName =>
       get {
         parameters("n".as[Int].?) { n =>
@@ -66,7 +60,7 @@ case class NexusEndpoint(camerasHandler: ActorRef) extends LazyLogging {
       }
     }
   }
-  def cameraList = {
+  def cameraList:Route = {
     pathEndOrSingleSlash {
       get {
         onComplete((camerasHandler ? GetListOfCameras).mapTo[List[String]]) {

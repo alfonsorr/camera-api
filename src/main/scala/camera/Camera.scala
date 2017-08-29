@@ -5,25 +5,19 @@ import java.util.Calendar
 
 import com.typesafe.scalalogging.LazyLogging
 import messages.Photo
-import utils.Configuration
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
 
-
-
-
-
-object Camera extends LazyLogging with Configuration {
+object Camera extends LazyLogging {
 
   val raspistillPath = "/opt/vc/bin/raspistill"
-  private val timeout = config.getDuration("timeout").toMillis
 
-  private def snap(photoOptions: PhotoOptions, name: String)(
+  private def snap(photoOptions: PhotoOptions)(
       implicit executor: ExecutionContext): Future[Array[Byte]] = {
     Future {
       import scala.sys.process._
-      val str = photoOptions(name)
+      val str = photoOptions.optionString
       val command = s"$raspistillPath $str"
       logger.debug(s"Executing: $command")
       val os = new ByteArrayOutputStream()
@@ -35,7 +29,7 @@ object Camera extends LazyLogging with Configuration {
 
   def takePicture(photoOptions: PhotoOptions)(
       implicit executor: ExecutionContext): Future[Photo] = {
-    snap(photoOptions, "-").map(data => Photo(Calendar.getInstance,data, photoOptions.format))
+    snap(photoOptions).map(data => Photo(Calendar.getInstance,data, photoOptions.format))
   }
 }
 
@@ -53,12 +47,12 @@ trait TaggedOptions {
 
     val list = for {
       (tag, value) <- tags.zip(values)
-      transformedValue = transformValues(value)
-    } yield (tag, transformedValue)
+      transformedValue = transformValues(value).map(a => (tag, a))
+    } yield transformedValue
 
     list
-      .filter(e => e._2.nonEmpty)
-      .map { case (tag, value) => s"-$tag ${value.get}" }
+      .flatten
+      .map { case (tag, value) => s"-$tag $value" }
       .mkString(" ")
   }
 }
@@ -73,31 +67,38 @@ case class AdvanceOptions(verticalFlip: Boolean = false,
   }
 }
 
-case class PhotoOptions(path: String,
-                        format: PhotoFormat = PhotoFormats.JPG,
-                        width: Int = 1900,
-                        height: Int = 1080,
-                        quality: Int = 100,
-                        timeout: Duration = Duration(100, "ms"),
+object PhotoOptions {
+  import scala.concurrent.duration._
+  val MAX_WIDTH = 1900
+  val MAX_HEIGHT = 1080
+  val MAX_QUALITY = 100
+  val MIN_TIMEOUT:Duration = 100.millis
+}
+
+case class PhotoOptions(format: PhotoFormat = PhotoFormats.JPG,
+                        width: Int = PhotoOptions.MAX_WIDTH,
+                        height: Int = PhotoOptions.MAX_HEIGHT,
+                        quality: Int = PhotoOptions.MAX_QUALITY,
+                        timeout: Duration = PhotoOptions.MIN_TIMEOUT,
                         advanceOptions: Option[AdvanceOptions] = None,
                         noPreview: Boolean = true)
     extends TaggedOptions {
-  def apply(name: String): String = {
-    val filename = if (name == "-"){
-      name
-    } else {
-      filePath(name)
-    }
+  import PhotoOptions._
+  assert(width <= MAX_WIDTH && width > 0, "The width should be between 1900 and 1 (inclusive)")
+  assert(height <= MAX_HEIGHT && width > 0, "The height should be between 1080 and 1 (inclusive)")
+  assert(quality <= MAX_QUALITY && quality > 0, "The quality should be between 100 and 1 (inclusive)")
+  assert(timeout.toMillis >= 100, "A timeout smaller than 100 milliseconds is too small")
+
+  val optionString: String = {
+    val printOutputPath = "-"
     val values = List(Some(width),
                       Some(height),
                       Some(quality),
-                      Some(filename),
-                      Some(format()),
+                      Some(printOutputPath),
+                      Some(format.stringValue),
                       Some(timeout.toMillis),
                       Some(noPreview))
     val tags = List("w", "h", "q", "o", "e", "t", "n")
     stringOfTags(values, tags)
   }
-
-  def filePath(name: String) = s"$path/$name.${format()}"
 }
