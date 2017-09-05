@@ -1,13 +1,8 @@
 package actors.paparazzi
 
-import java.util.{Calendar, Date}
-import java.util.concurrent.TimeUnit
-
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import camera.{Camera, PhotoOptions}
-
-import scala.concurrent.duration.Duration
 import akka.pattern.pipe
+import camera.{Camera, PhotoOptions}
 
 case object SnapPhoto
 
