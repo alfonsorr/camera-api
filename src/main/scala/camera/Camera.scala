@@ -10,9 +10,11 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
 
 object Camera extends LazyLogging {
+  val defaultCamera = Camera()
 
-  val raspistillPath = "/opt/vc/bin/raspistill"
+}
 
+case class Camera(raspistillPath:String = "/opt/vc/bin/raspistill") extends LazyLogging{
   private def snap(photoOptions: PhotoOptions)(
       implicit executor: ExecutionContext): Future[Array[Byte]] = {
     Future {
@@ -32,4 +34,3 @@ object Camera extends LazyLogging {
     snap(photoOptions).map(data => Photo(Calendar.getInstance,data, photoOptions.format))
   }
 }
-

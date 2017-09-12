@@ -7,14 +7,15 @@ import camera.{Camera, PhotoOptions}
 case object SnapPhoto
 
 object Paparazzi {
-  def props(photoOptions: PhotoOptions, photoDestinyActor:ActorRef) = Props(new Paparazzi(photoOptions, photoDestinyActor))
+  def props(photoOptions: PhotoOptions, photoDestinyActor:ActorRef, camera: Camera = Camera.defaultCamera) =
+    Props(new Paparazzi(photoOptions, photoDestinyActor, camera))
 }
 
-class Paparazzi(photoOptions: PhotoOptions, photoDestinyActor:ActorRef) extends Actor with ActorLogging{
+class Paparazzi(photoOptions: PhotoOptions, photoDestinyActor:ActorRef, camera: Camera) extends Actor with ActorLogging{
 
   import context.dispatcher
 
   override def receive: Receive = {
-    case SnapPhoto => Camera.takePicture(photoOptions) pipeTo photoDestinyActor
+    case SnapPhoto => camera.takePicture(photoOptions) pipeTo photoDestinyActor
   }
 }
