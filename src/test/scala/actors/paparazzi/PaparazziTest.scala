@@ -28,7 +28,7 @@ class PaparazziTest extends AkkaTestUtil{
 
     val destinyActor = TestProbe()
     val cameraTest = new CameraTest()
-    val paparazziTest = system.actorOf(Paparazzi.props(options, destinyActor.ref, cameraTest))
+    val paparazziTest = system.actorOf(Paparazzi.props(options, destinyActor.ref,"id", cameraTest))
 
 
     within(2.seconds){

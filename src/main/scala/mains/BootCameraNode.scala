@@ -51,7 +51,7 @@ object BootCameraNode extends App {
     val nPhotos = 10
     val cache = system.actorOf(PhotoCache.props(nPhotos), "photoCache")
     val paparazzi =
-      system.actorOf(Paparazzi.props(PhotoOptions(), cache), "paparazzi")
+      system.actorOf(Paparazzi.props(PhotoOptions(), cache, "camaraId"), "paparazzi")
     if (takePeriodicPhotos) {
       system.scheduler.schedule(period,
         period,
