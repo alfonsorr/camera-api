@@ -1,0 +1,1 @@
+public elements to comunicate with the camera node
