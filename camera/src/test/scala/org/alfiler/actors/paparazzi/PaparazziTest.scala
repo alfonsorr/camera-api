@@ -1,12 +1,10 @@
-package actors.paparazzi
+package org.alfiler.actors.paparazzi
 
 import java.util.Calendar
 
 import akka.testkit.TestProbe
 import org.alfiler.camera.Camera
-import messages.Photo
-import org.alfiler.PhotoOptions
-import org.alfiler.paparazzi.{Paparazzi, SnapPhoto}
+import org.alfiler.{Photo, PhotoOptions}
 import testUtils.AkkaTestUtil
 
 import scala.concurrent.duration._
@@ -14,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PaparazziTest extends AkkaTestUtil{
 
-  "The org.alfiler.paparazzi actor" should "ask for a photo with the given options" in {
+  "The paparazzi actor" should "ask for a photo with the given options" in {
 
     val options = PhotoOptions()
 

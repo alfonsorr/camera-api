@@ -1,7 +1,8 @@
 package actors.photoGetter
 
 import akka.actor.{Actor, ActorLogging, Props}
-import messages.{GetLastPhoto, GetNthPhoto, Photo}
+import messages.{GetLastPhoto, GetNthPhoto}
+import org.alfiler.Photo
 
 object PhotoCache {
   def props(nPhotos:Int):Props = Props(new PhotoCache(nPhotos))

@@ -4,20 +4,17 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 import actors.CameraClusterAware
-import actors.paparazzi.Paparazzi
 import actors.photoGetter.PhotoCache
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
-import org.alfiler.camera.PhotoFormats
 import com.google.common.io.ByteStreams
 import com.typesafe.config.{Config, ConfigFactory}
 import endpoint.PhotoEndpoint
-import messages.Photo
-import org.alfiler.PhotoOptions
-import org.alfiler.paparazzi.{Paparazzi, SnapPhoto}
+import org.alfiler.{Photo, PhotoFormats, PhotoOptions}
+import org.alfiler.actors.paparazzi.{Paparazzi, SnapPhoto}
 import utils.SwaggerConfig
 
 import scala.concurrent.ExecutionContext
@@ -28,7 +25,7 @@ object BootCameraNode extends App {
 
   val confFile = args.map(_+".conf").headOption.getOrElse("camera1.conf")
   val config = ConfigFactory.parseResources(confFile).withFallback(ConfigFactory.load())
-  val cameraConfig = config.getConfig("org.alfiler.camera")
+  val cameraConfig = config.getConfig("camera")
   val port = cameraConfig.getInt("port")
   private implicit val system:ActorSystem = ActorSystem("default", config)
   private implicit val executor:ExecutionContext = system.dispatcher
@@ -53,7 +50,7 @@ object BootCameraNode extends App {
     val nPhotos = 10
     val cache = system.actorOf(PhotoCache.props(nPhotos), "photoCache")
     val paparazzi =
-      system.actorOf(Paparazzi.props(PhotoOptions(), cache), "org.alfiler.paparazzi")
+      system.actorOf(Paparazzi.props(PhotoOptions(), cache), "paparazzi")
     if (takePeriodicPhotos) {
       system.scheduler.schedule(period,
         period,

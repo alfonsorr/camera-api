@@ -3,7 +3,7 @@ package mains
 object Boot extends App with BootInterface{
 
  val options = {
-   case "org.alfiler.camera" => BootCameraNode.main(args.tail); "org.alfiler.camera"
+   case "camera" => BootCameraNode.main(args.tail); "camera"
    case "backend" => BootBackNode.main(args.tail); "backend"
   }
 

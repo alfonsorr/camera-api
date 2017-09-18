@@ -28,17 +28,17 @@ class CamerasReception(camerasList:ActorRef) extends Actor with ActorLogging{
     receiveCamera(Map.empty,Map.empty)
   def receiveCamera(cameras: Map[String, ActorRef], senders: Map[ActorRef, String]): Receive = {
     case a:CameraState =>
-      log.info("message from org.alfiler.camera")
+      log.info("message from camera")
       camerasList ! a
     case MemberUp(member) =>
       log.info("Member is Up: {}", member.address)
-      if (member.roles.contains("org.alfiler.camera")) {
-        log.info(s"Expecting the registry of a org.alfiler.camera ${member.uniqueAddress}")
+      if (member.roles.contains("camera")) {
+        log.info(s"Expecting the registry of a camera ${member.uniqueAddress}")
       }
     case UnreachableMember(member) =>
-      if (member.roles.contains("org.alfiler.camera")) {
+      if (member.roles.contains("camera")) {
         log.info("Member detected as unreachable: {}", member)
-        unregisterCamera("org.alfiler.camera")
+        unregisterCamera("camera")
         cluster.down(member.address)
       }
     case MemberRemoved(member, previousStatus) =>

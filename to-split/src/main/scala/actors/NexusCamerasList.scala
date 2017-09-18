@@ -18,17 +18,17 @@ class NexusCamerasList extends Actor with ActorLogging{
 
   override def receive: Receive = {
     case GetPhotoFromList(id, action) => if (cameras.contains(id)) {
-      log.info(s"forwarding to the org.alfiler.camera $id")
+      log.info(s"forwarding to the camera $id")
       cameras(id) forward action
     } else {
-      log.error(s"org.alfiler.camera $id not found")
+      log.error(s"camera $id not found")
       sender() ! CameraNotFound
     }
     case GetListOfCameras =>
       log.info("sending the list of cameras :D")
       sender() ! cameras.keys.toList
     case CameraUp(id, ref) =>
-      log.info(s"new org.alfiler.camera $id")
+      log.info(s"new camera $id")
       cameras = cameras + (id -> ref)
   }
 }

@@ -11,7 +11,8 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.scalalogging.LazyLogging
 import io.swagger.annotations.{Api, ApiImplicitParams, ApiOperation}
-import messages.{GetNthPhoto, Photo}
+import messages.GetNthPhoto
+import org.alfiler.Photo
 
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}

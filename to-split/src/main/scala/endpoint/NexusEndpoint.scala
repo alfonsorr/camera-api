@@ -12,19 +12,20 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.scalalogging.LazyLogging
 import io.swagger.annotations.{Api, ApiImplicitParams, ApiOperation}
-import messages.{GetNthPhoto, Photo}
+import messages.GetNthPhoto
+import org.alfiler.Photo
 
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 
 @Api(tags = Array("get"))
-@Path("/org.alfiler.camera")
+@Path("/camera")
 case class NexusEndpoint(camerasHandler: ActorRef) extends LazyLogging {
 
   implicit val timeout:Timeout = Timeout(Duration(2, TimeUnit.SECONDS))
 
   val route:Route = {
-    pathPrefix("org.alfiler.camera") {
+    pathPrefix("camera") {
       cameraPhoto ~ cameraList
     }
   }

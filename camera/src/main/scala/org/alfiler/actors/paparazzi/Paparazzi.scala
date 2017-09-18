@@ -1,4 +1,4 @@
-package org.alfiler.paparazzi
+package org.alfiler.actors.paparazzi
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.pipe

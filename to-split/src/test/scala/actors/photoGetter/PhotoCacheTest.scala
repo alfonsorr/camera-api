@@ -2,8 +2,8 @@ package actors.photoGetter
 
 import java.util.Calendar
 
-import org.alfiler.camera.PhotoFormats
-import messages.{GetLastPhoto, GetNthPhoto, Photo}
+import messages.{GetLastPhoto, GetNthPhoto}
+import org.alfiler.{Photo, PhotoFormats}
 import testUtils.AkkaTestUtil
 
 class PhotoCacheTest extends AkkaTestUtil{
