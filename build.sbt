@@ -23,6 +23,7 @@ lazy val coreDependencies = {
     "com.typesafe.akka" %% "akka-stream" % akkaV,
     "com.typesafe.akka" %% "akka-http" % akkaHTTPV,
     "com.typesafe.akka" %% "akka-cluster" % akkaV,
+    "com.typesafe.akka" %% "akka-cluster-tools" % akkaV,
     "com.typesafe.akka" %% "akka-cluster-metrics" % akkaV,
     "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaV % "test",
     "com.typesafe.akka" %% "akka-testkit" % akkaV % "test",

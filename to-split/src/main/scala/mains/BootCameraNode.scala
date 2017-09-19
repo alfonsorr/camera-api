@@ -14,7 +14,8 @@ import com.google.common.io.ByteStreams
 import com.typesafe.config.{Config, ConfigFactory}
 import endpoint.PhotoEndpoint
 import org.alfiler.{Photo, PhotoFormats, PhotoOptions}
-import org.alfiler.actors.paparazzi.{Paparazzi, SnapPhoto}
+import org.alfiler.actors.paparazzi.Paparazzi
+import org.alfiler.actors.paparazzi.Paparazzi.SnapPhoto
 import utils.SwaggerConfig
 
 import scala.concurrent.ExecutionContext
@@ -50,7 +51,7 @@ object BootCameraNode extends App {
     val nPhotos = 10
     val cache = system.actorOf(PhotoCache.props(nPhotos), "photoCache")
     val paparazzi =
-      system.actorOf(Paparazzi.props(PhotoOptions(), cache), "paparazzi")
+      system.actorOf(Paparazzi.props(PhotoOptions()), "paparazzi")
     if (takePeriodicPhotos) {
       system.scheduler.schedule(period,
         period,
