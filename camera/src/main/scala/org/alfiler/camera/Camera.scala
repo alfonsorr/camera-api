@@ -9,11 +9,13 @@ import scala.concurrent.{ExecutionContext, Future}
 import org.alfiler.{Photo, PhotoOptions}
 
 object Camera extends LazyLogging {
-  val defaultCamera = Camera()
+  val defaultCamera: Camera = {
+    Camera()
+  }
 
 }
 
-case class Camera(raspistillPath:String = "/opt/vc/bin/raspistill") extends LazyLogging{
+case class Camera(raspistillPath:String = "/opt/vc/bin/raspistill") extends LazyLogging {
   private def snap(photoOptions: PhotoOptions)(
       implicit executor: ExecutionContext): Future[Array[Byte]] = {
     Future {

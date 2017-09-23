@@ -1,22 +1,19 @@
 package org.alfiler.main
 
 import akka.actor.{ActorRef, ActorSystem}
-import org.alfiler.PhotoOptions
-import org.alfiler.actors.deliverer.Deliverer
-import org.alfiler.actors.deliverer.Deliverer.SendTo
-import org.alfiler.actors.paparazzi.Paparazzi
+import org.alfiler.actors.config.PhotoConfigurator
+import org.alfiler.actors.config.PhotoConfigurator.CameraFlowConfig
 
 object LunchCamera {
-  type Deliverer = ActorRef
-  def initializeCameraFlow(implicit system:ActorSystem):Deliverer = {
-    val deliverer = system.actorOf(Deliverer.props(), "deliverer")
-    val camera = system.actorOf(Paparazzi.props(PhotoOptions()), "camera")
-    deliverer ! SendTo("cameras")
-    deliverer
+  type Configurator = ActorRef
+  def initializeCameraFlow(implicit system:ActorSystem):Configurator = {
+    val configurator = system.actorOf(PhotoConfigurator.props())
+    configurator ! CameraFlowConfig() //send default config for now
+    configurator
   }
 
   def main(args: Array[String]): Unit = {
     implicit val system: ActorSystem = ActorSystem("cameraNode")
-    val deliverer = initializeCameraFlow
+    val configurator = initializeCameraFlow
   }
 }
