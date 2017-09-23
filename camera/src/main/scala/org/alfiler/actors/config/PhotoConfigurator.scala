@@ -29,7 +29,7 @@ class PhotoConfigurator extends Actor{
   implicit val executionContext: ExecutionContextExecutor = context.dispatcher
 
   def schedulePhotos(actualConfig: CameraFlowConfig):Cancellable = {
-    context.system.scheduler.schedule(0.seconds,actualConfig.photoPeriod,camera, Paparazzi.SnapPhoto)
+    context.system.scheduler.schedule(actualConfig.photoPeriod,actualConfig.photoPeriod,camera, Paparazzi.SnapPhoto)
   }
 
   def photoToPublic(actualConfig: CameraFlowConfig):PhotoTransformer = { photo:Photo =>
